@@ -4,19 +4,34 @@
 
 ;(function () {
     'use strict';
+    var title, button;
 
-    // title of the task
-    var taskNumber = document.querySelector('#key-val');
-    var taskTitle = document.querySelector('#summary-val');
-    if ( !taskNumber || !taskTitle ) {
-        return;
+    function getTitle() {
+      var taskNumber = document.querySelector('#key-val');
+      var taskTitle = document.querySelector('#summary-val');
+
+      if ( !taskNumber || !taskTitle ) {
+          return false;
+      }
+
+      return taskNumber.innerText + ': ' + taskTitle.innerText;
     }
-    var title = taskNumber.innerText + ': ' + taskTitle.innerText;
 
     /**
      * @todo Research, how we could normally insert our group into the page
      */
     function createCopyButton() {
+        var newTitle = getTitle();
+        if (!newTitle) return;
+
+        if (newTitle !== title) {
+          title = newTitle;
+          button = null;
+        }
+
+        if (button) return;
+
+        
         var copyButton = document.createElement('a'),
             toolbarItem = document.createElement('li'),
             copiedItem = document.createElement('span'),
@@ -49,7 +64,7 @@
         });
 
         // insert created toolbar after last one
-        lastToolbarGroup.parentNode
+        button = lastToolbarGroup.parentNode
             .insertBefore(toolbarGroup, lastToolbarGroup.nextSibling);
     }
 
@@ -61,7 +76,5 @@
         });
     }
 
-    // contents scripts are inserted after DOM is ready
-    // that's why we could use it right there
-    createCopyButton();
+    setInterval(createCopyButton, 1000);
 }());

@@ -1,31 +1,33 @@
 {
-    "name": "Jira Assistant",
-    "version": "1.3.0",
-    "manifest_version": 2,
-    "description": "Helps to interact with JIRA task tracker",
-    "icons": { "128": "images/jira.png" },
+  "name": "Jira Assistant",
+  "version": "1.3.0",
+  "manifest_version": 2,
+  "description": "Helps to interact with JIRA task tracker",
+  "icons": {
+    "128": "images/jira.png"
+  },
 
-    "background": {
-        "scripts": [
-            "js/background.js"
-        ]
-    },
-
-    "permissions": [
-        "tabs",
-        "clipboardWrite",
-        "https://livejournal.atlassian.net/*"
-    ],
-
-    "content_scripts": [{
-        "js": [
-            "js/contentScript.js"
-        ],
-        "css": [ "css/content.css" ],
-        "matches": ["https://livejournal.atlassian.net/browse/LJ*"]
-    }],
-
-    "web_accessible_resources": [
-        "images/copy.png"
+  "background": {
+    "scripts": [
+      "js/background.js"
     ]
+  },
+
+  "permissions": [
+    "tabs",
+    "clipboardWrite",
+    "https://livejournal.atlassian.net/*"
+  ],
+
+  "content_scripts": [{
+    "js": [
+      "js/contentScript.js"
+    ],
+    "css": ["css/content.css"],
+    "matches": ["https://livejournal.atlassian.net/browse/LJ*"]
+  }],
+
+  "web_accessible_resources": [
+    "images/copy.png"
+  ]
 }

@@ -1,14 +1,17 @@
 // here will be content script of the plugin
+/* eslint-disable one-var */
+/* eslint-disable vars-on-top */
 
 ;(function () {
     'use strict';
 
     // title of the task
-    var title = document.querySelector('.issue-header-content p').innerText;
-
-    if ( !title ) {
+    var taskNumber = document.querySelector('#key-val');
+    var taskTitle = document.querySelector('#summary-val');
+    if ( !taskNumber || !taskTitle ) {
         return;
     }
+    var title = taskNumber.innerText + ': ' + taskTitle.innerText;
 
     /**
      * @todo Research, how we could normally insert our group into the page

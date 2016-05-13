@@ -14,7 +14,7 @@
     "permissions": [
         "tabs",
         "clipboardWrite",
-        "https://jira.sup.com/*"
+        "https://livejournal.atlassian.net/*"
     ],
 
     "content_scripts": [{

@@ -2,7 +2,6 @@
 /* eslint-disable one-var */
 /* eslint-disable vars-on-top */
 
-;
 (function() {
   'use strict';
   var title, button;
@@ -10,12 +9,14 @@
   function getTitle() {
     var taskNumber = document.querySelector('#key-val');
     var taskTitle = document.querySelector('#summary-val');
+    var cleanedTitle;
 
     if (!taskNumber || !taskTitle) {
       return false;
     }
-
-    return taskNumber.innerText + ': ' + taskTitle.innerText;
+    
+    cleanedTitle = taskTitle.innerText.replace(/\[P\]\s/g, '');
+    return taskNumber.innerText + ': ' + cleanedTitle;
   }
 
   /**

@@ -4,7 +4,11 @@
 
 (function() {
   'use strict';
-  var title, button;
+  var title, button, linksInProgress, indexCache;
+  indexCache = {};
+
+  setInterval(createCopyButton, 1000);
+  setInterval(createHashLinks, 1000);
 
   function getTitle() {
     var taskNumber = document.querySelector('#key-val');
@@ -80,5 +84,81 @@
     });
   }
 
-  setInterval(createCopyButton, 1000);
+  function getRevLinks() {
+    const comms = document.querySelectorAll('.activity-comment')
+    return Array.from(comms)
+      .filter(comm => comm.querySelector('.action-details > a[rel="releaserobot"]'))
+      .filter(comm => comm.querySelector('.action-body:not(.ja-updated)'))
+      .map(comm => {
+        const node = comm.querySelector('.action-body')
+        const [, repo, rev] = node.innerText.match(/\s([\w\d-]+):(\d+)\sby\s/) || []
+        return {
+          node,
+          repo,
+          rev,
+        }
+      })
+      .filter(comm => comm.repo && comm.rev)
+  }
+
+  function parse(txt) {
+    return txt
+      .split(`\n`)
+      .reduce((acc, str) => {
+        const data = str.split(' ')
+        acc[data[0]] = data[1]
+        return acc
+      }, {})
+  }
+
+  function getHashLink(repo, rev) {
+    const read = repo => `https://raw.githubusercontent.com/lj-team/migration-search-index/master/${repo}`
+    const write = (repo, hash) => `<a href="http://gitlab.lj-19-m.local.bulyon.com/svn-history/${repo}/commit/${hash}" target="_blank">${hash}</a>`
+
+    const rh = parse(localStorage.getItem(`lj-search-index--${repo}`) || '')
+    if (rh.hasOwnProperty(rev)) return Promise.resolve(write(repo, rh[rev]))
+
+    return fetch(read(repo))
+      .then(res => res.text())
+      .then(res => {
+        const rh = parse(res)
+      
+        if (!rh.hasOwnProperty(rev)) {
+          throw new Error({ message: 'Didn\'t find revision' })
+        }
+
+        localStorage.setItem(`lj-search-index--${repo}`, res)
+        return write(repo, rh[rev])
+      })
+      .catch(err => {
+        return err.message
+      })
+  }
+
+  function createHashLinks() {
+    if (linksInProgress) return 
+
+    const links = getRevLinks()
+    if (!links || links.length === 0) return
+
+    linksInProgress = true
+
+    Promise.all(
+      links
+        .map(link => {
+          indexCache[link.repo] = indexCache[link.repo] || getHashLink(link.repo, link.rev)
+
+          return indexCache[link.repo]
+            .then(res => {
+              const prev = link.node.innerText
+              link.node.innerHTML = `${prev}</br>${res}`
+              link.node.className += ' ja-updated'
+              return true
+            })
+        })
+    )
+      .then(() => {
+        linksInProgress = false
+      })
+  }
 }());

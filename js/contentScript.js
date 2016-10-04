@@ -118,13 +118,14 @@
     const rh = parse(localStorage.getItem(`lj-search-index--${repo}`) || '')
     if (rh.hasOwnProperty(rev)) return Promise.resolve(write(repo, rh[rev]))
 
-    return fetch(read(repo))
-      .then(res => res.text())
+    indexCache[repo] = indexCache[repo] || fetch(read(repo)).then(res => res.text())
+
+    return indexCache[repo]
       .then(res => {
         const rh = parse(res)
       
         if (!rh.hasOwnProperty(rev)) {
-          throw new Error({ message: 'Didn\'t find revision' })
+          throw new Error('Didn\'t find hash. Try later.')
         }
 
         localStorage.setItem(`lj-search-index--${repo}`, res)
@@ -146,11 +147,9 @@
     Promise.all(
       links
         .map(link => {
-          indexCache[link.repo] = indexCache[link.repo] || getHashLink(link.repo, link.rev)
-
-          return indexCache[link.repo]
+          return getHashLink(link.repo, link.rev)
             .then(res => {
-              const prev = link.node.innerText
+              const prev = link.node.innerHTML
               link.node.innerHTML = `${prev}</br>${res}`
               link.node.className += ' ja-updated'
               return true

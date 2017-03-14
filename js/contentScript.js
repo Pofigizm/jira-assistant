@@ -113,7 +113,7 @@
 
   function getHashLink(repo, rev) {
     const read = repo => `https://raw.githubusercontent.com/lj-team/migration-search-index/master/${repo}`
-    const write = (repo, hash) => `<a href="http://gitlab.lj-19-m.local.bulyon.com/svn-history/${repo}/commit/${hash}" target="_blank">${hash}</a>`
+    const write = (repo, hash) => `<a href="https://gitlab.rambler.ru/lj-history/${repo}/commit/${hash}" target="_blank">${hash}</a>`
 
     const rh = parse(localStorage.getItem(`lj-search-index--${repo}`) || '')
     if (rh.hasOwnProperty(rev)) return Promise.resolve(write(repo, rh[rev]))
